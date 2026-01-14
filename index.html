@@ -104,5 +104,51 @@ function iniciar() {
         if (restante <= 0) {
             document.getElementById("barra").style.width = "100%";
             document.getElementById("barra").style.background = "green";
-            document.ge
+            document.getElementById("resultado").innerHTML = "🎉 ¡YA TE PODÉS JUBILAR! 🎉";
+            document.getElementById("mensaje").innerHTML = "🥂 ¡Se terminó la vida laboral!";
+            clearInterval(intervalo);
+            return;
+        }
+
+        const segundos = Math.floor(restante / 1000) % 60;
+        const minutos = Math.floor(restante / (1000 * 60)) % 60;
+        const horas = Math.floor(restante / (1000 * 60 * 60)) % 24;
+        const diasTotales = Math.floor(restante / (1000 * 60 * 60 * 24));
+        const anios = Math.floor(diasTotales / 365);
+        const dias = diasTotales % 365;
+
+        const porcentaje = Math.min(100, (recorrido / total) * 100);
+
+        const barra = document.getElementById("barra");
+        barra.style.width = porcentaje.toFixed(4) + "%";
+
+        if (porcentaje < 50) barra.style.background = "red";
+        else if (porcentaje < 80) barra.style.background = "orange";
+        else barra.style.background = "green";
+
+        document.getElementById("resultado").innerHTML = `
+        ⏳ Te falta para jubilarte:<br>
+        <b>${anios}</b> años, <b>${dias}</b> días, <b>${horas}</b> horas, <b>${minutos}</b> minutos y <b>${segundos}</b> segundos<br><br>
+        📅 Cumplís 60 el: <b>${fecha60.toLocaleDateString()}</b><br>
+        💼 Completás 30 años de trabajo el: <b>${fecha30Trabajo.toLocaleDateString()}</b><br>
+        🏁 Fecha real de jubilación: <b>${fechaRealJubi.toLocaleDateString()}</b>
+        `;
+
+        let mensaje = "💪 Vamos arriba que falta pero se llega";
+        if (porcentaje > 50) mensaje = "😃 ¡Ya pasaste la mitad!";
+        if (porcentaje > 80) mensaje = "🎉 ¡Última recta!";
+        if (porcentaje > 90) mensaje = "🍾 ¡Se huele el corcho!";
+        if (porcentaje > 97) mensaje = "🥳 ¡Andá eligiendo destino!";
+
+        document.getElementById("mensaje").innerHTML = mensaje;
+    }
+
+    actualizar();
+    intervalo = setInterval(actualizar, 1000);
+}
+
+</script>
+
+</body>
+</html>
 
