@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Jubi 🎉</title>
+<title>Jubi Uruguay 🇺🇾🎉</title>
 
 <style>
 body {
@@ -12,13 +12,11 @@ body {
     padding: 30px;
 }
 
-h1 {
-    font-size: 2.5em;
-}
+h1 { font-size: 2.5em; }
 
 input, button {
-    font-size: 1.2em;
-    padding: 5px;
+    font-size: 1.1em;
+    padding: 6px;
 }
 
 #contenedorBarra {
@@ -38,12 +36,12 @@ input, button {
 }
 
 #resultado {
-    font-size: 1.4em;
+    font-size: 1.3em;
     margin-top: 20px;
 }
 
 #mensaje {
-    font-size: 2em;
+    font-size: 1.8em;
     margin-top: 20px;
 }
 </style>
@@ -51,16 +49,16 @@ input, button {
 
 <body>
 
-<h1>🎉 Jubi 🎉</h1>
+<h1>🇺🇾 Jubi Uruguay 🎉</h1>
 
 <p>Fecha de nacimiento:</p>
 <input type="date" id="nacimiento">
 
-<p>Edad de jubilación:</p>
-<input type="number" id="edadJubi" value="65">
+<p>¿A qué edad empezaste a trabajar?</p>
+<input type="number" id="inicioTrabajo" value="20">
 
 <br><br>
-<button onclick="iniciar()">Iniciar 🚀</button>
+<button onclick="iniciar()">Calcular 🚀</button>
 
 <div id="contenedorBarra">
     <div id="barra"></div>
@@ -81,68 +79,30 @@ function iniciar() {
     }
 
     const nacimiento = new Date(nacimientoStr);
-    const edadJubi = parseInt(document.getElementById("edadJubi").value);
+    const inicioTrabajoEdad = parseInt(document.getElementById("inicioTrabajo").value);
 
-    const fechaJubi = new Date(nacimiento);
-    fechaJubi.setFullYear(nacimiento.getFullYear() + edadJubi);
+    const fecha60 = new Date(nacimiento);
+    fecha60.setFullYear(nacimiento.getFullYear() + 60);
+
+    const fecha30Trabajo = new Date(nacimiento);
+    fecha30Trabajo.setFullYear(nacimiento.getFullYear() + inicioTrabajoEdad + 30);
+
+    // La fecha real es la más lejana
+    const fechaRealJubi = new Date(Math.max(fecha60.getTime(), fecha30Trabajo.getTime()));
 
     const inicioVida = nacimiento.getTime();
-    const finVidaLaboral = fechaJubi.getTime();
+    const fin = fechaRealJubi.getTime();
 
     if (intervalo) clearInterval(intervalo);
 
     function actualizar() {
         const ahora = new Date().getTime();
-
-        const total = finVidaLaboral - inicioVida;
+        const total = fin - inicioVida;
         const recorrido = ahora - inicioVida;
-        const restante = finVidaLaboral - ahora;
+        const restante = fin - ahora;
 
         if (restante <= 0) {
             document.getElementById("barra").style.width = "100%";
             document.getElementById("barra").style.background = "green";
-            document.getElementById("resultado").innerHTML = "🎉 ¡YA TE JUBILASTE! 🎉";
-            document.getElementById("mensaje").innerHTML = "🥂 A disfrutar la vida 🏖️";
-            clearInterval(intervalo);
-            return;
-        }
+            document.ge
 
-        const segundos = Math.floor(restante / 1000) % 60;
-        const minutos = Math.floor(restante / (1000 * 60)) % 60;
-        const horas = Math.floor(restante / (1000 * 60 * 60)) % 24;
-        const dias = Math.floor(restante / (1000 * 60 * 60 * 24));
-        const anios = Math.floor(dias / 365);
-
-        const porcentaje = Math.min(100, (recorrido / total) * 100);
-
-        const barra = document.getElementById("barra");
-        barra.style.width = porcentaje.toFixed(4) + "%";
-
-        // Color progresivo
-        if (porcentaje < 50) {
-            barra.style.background = "red";
-        } else if (porcentaje < 80) {
-            barra.style.background = "orange";
-        } else {
-            barra.style.background = "green";
-        }
-
-        document.getElementById("resultado").innerHTML =
-            `⏳ Te faltan: <br><b>${anios}</b> años, <b>${dias % 365}</b> días, <b>${horas}</b> horas, <b>${minutos}</b> minutos y <b>${segundos}</b> segundos`;
-
-        let mensaje = "💪 ¡Vamos que se puede!";
-        if (porcentaje > 50) mensaje = "😃 ¡Ya pasaste la mitad!";
-        if (porcentaje > 80) mensaje = "🎉 ¡Última recta!";
-        if (porcentaje > 90) mensaje = "🍾 ¡Se huele el corcho!";
-
-        document.getElementById("mensaje").innerHTML = mensaje;
-    }
-
-    actualizar();
-    intervalo = setInterval(actualizar, 1000);
-}
-
-</script>
-
-</body>
-</html>
