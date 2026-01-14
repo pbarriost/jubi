@@ -13,6 +13,7 @@
         align-items: center;
         justify-content: center;
         transition: background 1s;
+        overflow: hidden;
     }
     .card {
         background: rgba(2,6,23,0.9);
@@ -22,6 +23,7 @@
         text-align: center;
         max-width: 450px;
         width: 100%;
+        z-index: 2;
     }
     input, button {
         padding: 10px;
@@ -38,6 +40,19 @@
         margin-top: 20px;
         font-size: 18px;
         line-height: 1.5;
+    }
+    .confeti {
+        position: fixed;
+        top: -10px;
+        width: 10px;
+        height: 10px;
+        opacity: 0.8;
+        animation: caer linear forwards;
+    }
+    @keyframes caer {
+        to {
+            transform: translateY(110vh) rotate(720deg);
+        }
     }
 </style>
 </head>
@@ -60,9 +75,11 @@
 
 <script>
 let timer = null;
+let celebrado = false;
 
 function iniciar() {
     if (timer) clearInterval(timer);
+    celebrado = false;
 
     const nacimiento = new Date(document.getElementById("nacimiento").value);
     const edadJubi = parseInt(document.getElementById("edadJubi").value);
@@ -77,26 +94,37 @@ function iniciar() {
 
     const total = fechaJubi - nacimiento;
 
+    function mensajeSegunProgreso(p) {
+        if (p < 0.25) return "🌱 Estás empezando el camino. Hay muchísimo por construir.";
+        if (p < 0.5)  return "🚶 Ya estás en marcha. El tiempo está trabajando para vos.";
+        if (p < 0.75) return "⛵ Ya se ve la costa. Falta menos de lo que parece.";
+        if (p < 0.95) return "🌄 Último tramo. Preparando una nueva etapa.";
+        return "🎯 Recta final. Todo listo para disfrutar.";
+    }
+
     function actualizar() {
         const ahora = new Date();
 
         if (ahora >= fechaJubi) {
-            document.body.style.background = "#166534"; // verde fuerte
+            document.body.style.background = "#166534";
             document.getElementById("resultado").innerHTML = `
                 🎉 <b>¡Llegó el día!</b><br><br>
-                Disfrutá esta nueva etapa de tu vida 🌞
+                Comienza una nueva etapa de tu vida 🌞
             `;
+            if (!celebrado) {
+                lanzarConfeti();
+                celebrado = true;
+            }
             return;
         }
 
         const transcurrido = ahora - nacimiento;
         const progreso = Math.min(1, transcurrido / total);
 
-        // Interpolar color de azul (inicio) a verde (final)
+        // Color de fondo: azul → verde
         const r = Math.round(15  + progreso * (22  - 15));
         const g = Math.round(23  + progreso * (101 - 23));
         const b = Math.round(42  + progreso * (52  - 42));
-
         document.body.style.background = `rgb(${r}, ${g}, ${b})`;
 
         const restante = fechaJubi - ahora;
@@ -112,8 +140,11 @@ function iniciar() {
         minutos %= 60;
         segundos %= 60;
 
+        const mensaje = mensajeSegunProgreso(progreso);
+
         document.getElementById("resultado").innerHTML = `
-            Falta cada vez menos para esta nueva etapa 🌱<br><br>
+            ${mensaje}<br><br>
+            Te faltan:<br>
             🗓 <b>${años}</b> años<br>
             📅 <b>${dias}</b> días<br>
             ⏰ <b>${horas}</b> horas<br>
@@ -125,7 +156,22 @@ function iniciar() {
     actualizar();
     timer = setInterval(actualizar, 1000);
 }
+
+function lanzarConfeti() {
+    for (let i = 0; i < 150; i++) {
+        const confeti = document.createElement("div");
+        confeti.className = "confeti";
+        confeti.style.left = Math.random() * 100 + "vw";
+        confeti.style.background = `hsl(${Math.random()*360}, 80%, 60%)`;
+        confeti.style.animationDuration = (2 + Math.random() * 3) + "s";
+        confeti.style.transform = `rotate(${Math.random()*360}deg)`;
+        document.body.appendChild(confeti);
+
+        setTimeout(() => confeti.remove(), 6000);
+    }
+}
 </script>
 
 </body>
 </html>
+
