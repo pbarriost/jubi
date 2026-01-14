@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Camino a la jubilación</title>
+<style>
+    body {
+        font-family: system-ui, Arial, sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        transition: background 1s;
+    }
+    .card {
+        background: rgba(2,6,23,0.9);
+        padding: 28px;
+        border-radius: 16px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.6);
+        text-align: center;
+        max-width: 450px;
+        width: 100%;
+    }
+    input, button {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+    }
+    button {
+        cursor: pointer;
+        background: #38bdf8;
+        margin-top: 10px;
+    }
+    .numeros {
+        margin-top: 20px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h2>🌱 Camino a la jubilación</h2>
+
+    <p>Fecha de nacimiento:</p>
+    <input type="date" id="nacimiento">
+
+    <p>Edad de jubilación:</p>
+    <input type="number" id="edadJubi" value="65" min="40" max="90">
+
+    <br>
+    <button onclick="iniciar()">Iniciar</button>
+
+    <div class="numeros" id="resultado"></div>
+</div>
+
+<script>
+let timer = null;
+
+function iniciar() {
+    if (timer) clearInterval(timer);
+
+    const nacimiento = new Date(document.getElementById("nacimiento").value);
+    const edadJubi = parseInt(document.getElementById("edadJubi").value);
+
+    if (!nacimiento.getTime() || edadJubi <= 0) {
+        alert("Ingresá datos válidos.");
+        return;
+    }
+
+    const fechaJubi = new Date(nacimiento);
+    fechaJubi.setFullYear(nacimiento.getFullYear() + edadJubi);
+
+    const total = fechaJubi - nacimiento;
+
+    function actualizar() {
+        const ahora = new Date();
+
+        if (ahora >= fechaJubi) {
+            document.body.style.background = "#166534"; // verde fuerte
+            document.getElementById("resultado").innerHTML = `
+                🎉 <b>¡Llegó el día!</b><br><br>
+                Disfrutá esta nueva etapa de tu vida 🌞
+            `;
+            return;
+        }
+
+        const transcurrido = ahora - nacimiento;
+        const progreso = Math.min(1, transcurrido / total);
+
+        // Interpolar color de azul (inicio) a verde (final)
+        const r = Math.round(15  + progreso * (22  - 15));
+        const g = Math.round(23  + progreso * (101 - 23));
+        const b = Math.round(42  + progreso * (52  - 42));
+
+        document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+
+        const restante = fechaJubi - ahora;
+
+        let segundos = Math.floor(restante / 1000);
+        let minutos = Math.floor(segundos / 60);
+        let horas = Math.floor(minutos / 60);
+        let dias = Math.floor(horas / 24);
+        let años = Math.floor(dias / 365.25);
+
+        dias %= 365;
+        horas %= 24;
+        minutos %= 60;
+        segundos %= 60;
+
+        document.getElementById("resultado").innerHTML = `
+            Falta cada vez menos para esta nueva etapa 🌱<br><br>
+            🗓 <b>${años}</b> años<br>
+            📅 <b>${dias}</b> días<br>
+            ⏰ <b>${horas}</b> horas<br>
+            ⏱ <b>${minutos}</b> minutos<br>
+            ⚡ <b>${segundos}</b> segundos
+        `;
+    }
+
+    actualizar();
+    timer = setInterval(actualizar, 1000);
+}
+</script>
+
+</body>
+</html>
