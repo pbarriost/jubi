@@ -21,7 +21,7 @@
         border-radius: 16px;
         box-shadow: 0 0 30px rgba(0,0,0,0.6);
         text-align: center;
-        max-width: 450px;
+        max-width: 480px;
         width: 100%;
         z-index: 2;
     }
@@ -35,6 +35,19 @@
         cursor: pointer;
         background: #38bdf8;
         margin-top: 10px;
+    }
+    .barra-container {
+        margin-top: 20px;
+        background: #1e293b;
+        border-radius: 12px;
+        overflow: hidden;
+        height: 24px;
+    }
+    .barra {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #38bdf8, #22c55e, #facc15);
+        transition: width 1s;
     }
     .numeros {
         margin-top: 20px;
@@ -59,7 +72,7 @@
 <body>
 
 <div class="card">
-    <h2>🌱 Camino a la jubilación</h2>
+    <h2>🌈 Camino a la jubilación</h2>
 
     <p>Fecha de nacimiento:</p>
     <input type="date" id="nacimiento">
@@ -69,6 +82,10 @@
 
     <br>
     <button onclick="iniciar()">Iniciar</button>
+
+    <div class="barra-container">
+        <div class="barra" id="barra"></div>
+    </div>
 
     <div class="numeros" id="resultado"></div>
 </div>
@@ -95,11 +112,11 @@ function iniciar() {
     const total = fechaJubi - nacimiento;
 
     function mensajeSegunProgreso(p) {
-        if (p < 0.25) return "🌱 Estás empezando el camino. Hay muchísimo por construir.";
-        if (p < 0.5)  return "🚶 Ya estás en marcha. El tiempo está trabajando para vos.";
-        if (p < 0.75) return "⛵ Ya se ve la costa. Falta menos de lo que parece.";
-        if (p < 0.95) return "🌄 Último tramo. Preparando una nueva etapa.";
-        return "🎯 Recta final. Todo listo para disfrutar.";
+        if (p < 0.25) return "🌱 Arrancando el viaje. Todo por delante.";
+        if (p < 0.5)  return "🚶 En marcha. Ya hay mucho construido.";
+        if (p < 0.75) return "⛵ Gran parte del camino hecho. Se siente cerca.";
+        if (p < 0.95) return "🌄 Último tramo. Preparando la próxima aventura.";
+        return "🎯 Recta final. A disfrutar.";
     }
 
     function actualizar() {
@@ -108,70 +125,6 @@ function iniciar() {
         if (ahora >= fechaJubi) {
             document.body.style.background = "#166534";
             document.getElementById("resultado").innerHTML = `
-                🎉 <b>¡Llegó el día!</b><br><br>
-                Comienza una nueva etapa de tu vida 🌞
-            `;
-            if (!celebrado) {
-                lanzarConfeti();
-                celebrado = true;
-            }
-            return;
-        }
+                🎉 <b>¡Llegó el día!</b><br><br
 
-        const transcurrido = ahora - nacimiento;
-        const progreso = Math.min(1, transcurrido / total);
-
-        // Color de fondo: azul → verde
-        const r = Math.round(15  + progreso * (22  - 15));
-        const g = Math.round(23  + progreso * (101 - 23));
-        const b = Math.round(42  + progreso * (52  - 42));
-        document.body.style.background = `rgb(${r}, ${g}, ${b})`;
-
-        const restante = fechaJubi - ahora;
-
-        let segundos = Math.floor(restante / 1000);
-        let minutos = Math.floor(segundos / 60);
-        let horas = Math.floor(minutos / 60);
-        let dias = Math.floor(horas / 24);
-        let años = Math.floor(dias / 365.25);
-
-        dias %= 365;
-        horas %= 24;
-        minutos %= 60;
-        segundos %= 60;
-
-        const mensaje = mensajeSegunProgreso(progreso);
-
-        document.getElementById("resultado").innerHTML = `
-            ${mensaje}<br><br>
-            Te faltan:<br>
-            🗓 <b>${años}</b> años<br>
-            📅 <b>${dias}</b> días<br>
-            ⏰ <b>${horas}</b> horas<br>
-            ⏱ <b>${minutos}</b> minutos<br>
-            ⚡ <b>${segundos}</b> segundos
-        `;
-    }
-
-    actualizar();
-    timer = setInterval(actualizar, 1000);
-}
-
-function lanzarConfeti() {
-    for (let i = 0; i < 150; i++) {
-        const confeti = document.createElement("div");
-        confeti.className = "confeti";
-        confeti.style.left = Math.random() * 100 + "vw";
-        confeti.style.background = `hsl(${Math.random()*360}, 80%, 60%)`;
-        confeti.style.animationDuration = (2 + Math.random() * 3) + "s";
-        confeti.style.transform = `rotate(${Math.random()*360}deg)`;
-        document.body.appendChild(confeti);
-
-        setTimeout(() => confeti.remove(), 6000);
-    }
-}
-</script>
-
-</body>
-</html>
 
