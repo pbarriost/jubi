@@ -2,11 +2,56 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Jubi</title>
+<title>Jubi 🎉</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f7f7f7;
+    padding: 30px;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+input, button {
+    font-size: 1.2em;
+    padding: 5px;
+}
+
+#contenedorBarra {
+    width: 80%;
+    height: 40px;
+    background: #ddd;
+    margin: 30px auto;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#barra {
+    height: 100%;
+    width: 0%;
+    background: red;
+    transition: width 0.5s, background 0.5s;
+}
+
+#resultado {
+    font-size: 1.4em;
+    margin-top: 20px;
+}
+
+#mensaje {
+    font-size: 2em;
+    margin-top: 20px;
+}
+</style>
 </head>
+
 <body>
 
-<h2>Jubi</h2>
+<h1>🎉 Jubi 🎉</h1>
 
 <p>Fecha de nacimiento:</p>
 <input type="date" id="nacimiento">
@@ -15,19 +60,23 @@
 <input type="number" id="edadJubi" value="65">
 
 <br><br>
-<button onclick="iniciar()">Iniciar</button>
+<button onclick="iniciar()">Iniciar 🚀</button>
+
+<div id="contenedorBarra">
+    <div id="barra"></div>
+</div>
 
 <div id="resultado"></div>
+<div id="mensaje"></div>
 
 <script>
-alert("JS cargado");
 
-    function iniciar() {
-    alert("Funciona. Ahora sí 😄");
+let intervalo;
 
+function iniciar() {
     const nacimientoStr = document.getElementById("nacimiento").value;
     if (!nacimientoStr) {
-        alert("Elegí una fecha");
+        alert("Elegí tu fecha de nacimiento 🙂");
         return;
     }
 
@@ -37,14 +86,62 @@ alert("JS cargado");
     const fechaJubi = new Date(nacimiento);
     fechaJubi.setFullYear(nacimiento.getFullYear() + edadJubi);
 
-    const ahora = new Date();
-    const restante = fechaJubi - ahora;
+    const inicioVida = nacimiento.getTime();
+    const finVidaLaboral = fechaJubi.getTime();
 
-    const dias = Math.floor(restante / (1000 * 60 * 60 * 24));
+    if (intervalo) clearInterval(intervalo);
 
-    document.getElementById("resultado").innerHTML =
-        "Te faltan aproximadamente " + dias + " días para jubilarte.";
+    function actualizar() {
+        const ahora = new Date().getTime();
+
+        const total = finVidaLaboral - inicioVida;
+        const recorrido = ahora - inicioVida;
+        const restante = finVidaLaboral - ahora;
+
+        if (restante <= 0) {
+            document.getElementById("barra").style.width = "100%";
+            document.getElementById("barra").style.background = "green";
+            document.getElementById("resultado").innerHTML = "🎉 ¡YA TE JUBILASTE! 🎉";
+            document.getElementById("mensaje").innerHTML = "🥂 A disfrutar la vida 🏖️";
+            clearInterval(intervalo);
+            return;
+        }
+
+        const segundos = Math.floor(restante / 1000) % 60;
+        const minutos = Math.floor(restante / (1000 * 60)) % 60;
+        const horas = Math.floor(restante / (1000 * 60 * 60)) % 24;
+        const dias = Math.floor(restante / (1000 * 60 * 60 * 24));
+        const anios = Math.floor(dias / 365);
+
+        const porcentaje = Math.min(100, (recorrido / total) * 100);
+
+        const barra = document.getElementById("barra");
+        barra.style.width = porcentaje.toFixed(4) + "%";
+
+        // Color progresivo
+        if (porcentaje < 50) {
+            barra.style.background = "red";
+        } else if (porcentaje < 80) {
+            barra.style.background = "orange";
+        } else {
+            barra.style.background = "green";
+        }
+
+        document.getElementById("resultado").innerHTML =
+            `⏳ Te faltan: <br><b>${anios}</b> años, <b>${dias % 365}</b> días, <b>${horas}</b> horas, <b>${minutos}</b> minutos y <b>${segundos}</b> segundos`;
+
+        let mensaje = "💪 ¡Vamos que se puede!";
+        if (porcentaje > 50) mensaje = "😃 ¡Ya pasaste la mitad!";
+        if (porcentaje > 80) mensaje = "🎉 ¡Última recta!";
+        if (porcentaje > 90) mensaje = "🍾 ¡Se huele el corcho!";
+
+        document.getElementById("mensaje").innerHTML = mensaje;
+    }
+
+    actualizar();
+    intervalo = setInterval(actualizar, 1000);
 }
+
 </script>
 
 </body>
