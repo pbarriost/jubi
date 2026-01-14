@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Camino a la jubilación</title>
+<title>Reloj de jubilación</title>
 <style>
     body {
         font-family: system-ui, Arial, sans-serif;
@@ -12,18 +12,15 @@
         height: 100vh;
         align-items: center;
         justify-content: center;
-        transition: background 1s;
-        overflow: hidden;
     }
     .card {
-        background: rgba(2,6,23,0.9);
+        background: #020617;
         padding: 28px;
         border-radius: 16px;
         box-shadow: 0 0 30px rgba(0,0,0,0.6);
         text-align: center;
-        max-width: 480px;
+        max-width: 450px;
         width: 100%;
-        z-index: 2;
     }
     input, button {
         padding: 10px;
@@ -36,43 +33,31 @@
         background: #38bdf8;
         margin-top: 10px;
     }
-    .barra-container {
-        margin-top: 20px;
-        background: #1e293b;
-        border-radius: 12px;
-        overflow: hidden;
-        height: 24px;
-    }
     .barra {
+        margin-top: 20px;
+        width: 100%;
+        height: 18px;
+        background: #1e293b;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .progreso {
         height: 100%;
+        background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
         width: 0%;
-        background: linear-gradient(90deg, #38bdf8, #22c55e, #facc15);
-        transition: width 1s;
+        transition: width 0.5s;
     }
     .numeros {
         margin-top: 20px;
         font-size: 18px;
         line-height: 1.5;
     }
-    .confeti {
-        position: fixed;
-        top: -10px;
-        width: 10px;
-        height: 10px;
-        opacity: 0.8;
-        animation: caer linear forwards;
-    }
-    @keyframes caer {
-        to {
-            transform: translateY(110vh) rotate(720deg);
-        }
-    }
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>🌈 Camino a la jubilación</h2>
+    <h2>⏳ Reloj de jubilación</h2>
 
     <p>Fecha de nacimiento:</p>
     <input type="date" id="nacimiento">
@@ -81,10 +66,10 @@
     <input type="number" id="edadJubi" value="65" min="40" max="90">
 
     <br>
-    <button onclick="iniciar()">Iniciar</button>
+    <button onclick="iniciar()">Iniciar cuenta regresiva</button>
 
-    <div class="barra-container">
-        <div class="barra" id="barra"></div>
+    <div class="barra">
+        <div class="progreso" id="progreso"></div>
     </div>
 
     <div class="numeros" id="resultado"></div>
@@ -92,11 +77,9 @@
 
 <script>
 let timer = null;
-let celebrado = false;
 
 function iniciar() {
     if (timer) clearInterval(timer);
-    celebrado = false;
 
     const nacimiento = new Date(document.getElementById("nacimiento").value);
     const edadJubi = parseInt(document.getElementById("edadJubi").value);
@@ -109,22 +92,51 @@ function iniciar() {
     const fechaJubi = new Date(nacimiento);
     fechaJubi.setFullYear(nacimiento.getFullYear() + edadJubi);
 
-    const total = fechaJubi - nacimiento;
-
-    function mensajeSegunProgreso(p) {
-        if (p < 0.25) return "🌱 Arrancando el viaje. Todo por delante.";
-        if (p < 0.5)  return "🚶 En marcha. Ya hay mucho construido.";
-        if (p < 0.75) return "⛵ Gran parte del camino hecho. Se siente cerca.";
-        if (p < 0.95) return "🌄 Último tramo. Preparando la próxima aventura.";
-        return "🎯 Recta final. A disfrutar.";
-    }
-
     function actualizar() {
         const ahora = new Date();
 
         if (ahora >= fechaJubi) {
-            document.body.style.background = "#166534";
-            document.getElementById("resultado").innerHTML = `
-                🎉 <b>¡Llegó el día!</b><br><br
+            document.getElementById("resultado").innerHTML = "🎉 ¡Ya te podés jubilar!";
+            document.getElementById("progreso").style.width = "100%";
+            return;
+        }
+
+        const total = fechaJubi - nacimiento;
+        const transcurrido = ahora - nacimiento;
+        const restante = fechaJubi - ahora;
+
+        const porcentaje = Math.min(100, (transcurrido / total) * 100);
+        document.getElementById("progreso").style.width = porcentaje.toFixed(2) + "%";
+
+        let segundos = Math.floor(restante / 1000);
+        let minutos = Math.floor(segundos / 60);
+        let horas = Math.floor(minutos / 60);
+        let dias = Math.floor(horas / 24);
+        let años = Math.floor(dias / 365.25);
+
+        dias %= 365;
+        horas %= 24;
+        minutos %= 60;
+        segundos %= 60;
+
+        document.getElementById("resultado").innerHTML = `
+            Te faltan:<br><br>
+            🗓 <b>${años}</b> años<br>
+            📅 <b>${dias}</b> días<br>
+            ⏰ <b>${horas}</b> horas<br>
+            ⏱ <b>${minutos}</b> minutos<br>
+            ⚡ <b>${segundos}</b> segundos<br><br>
+            ⏳ Progreso vital: <b>${porcentaje.toFixed(2)}%</b>
+        `;
+    }
+
+    actualizar();
+    timer = setInterval(actualizar, 1000);
+}
+</script>
+
+</body>
+</html>
+
 
 
