@@ -2,93 +2,88 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Reloj de jubilación</title>
+<title>Camino a la jubilación</title>
 <style>
-    body {
-        font-family: system-ui, Arial, sans-serif;
-        background: #0f172a;
-        color: #e5e7eb;
-        display: flex;
-        height: 100vh;
-        align-items: center;
-        justify-content: center;
-    }
-    .card {
-        background: #020617;
-        padding: 28px;
-        border-radius: 16px;
-        box-shadow: 0 0 30px rgba(0,0,0,0.6);
-        text-align: center;
-        max-width: 450px;
-        width: 100%;
-    }
-    input, button {
-        padding: 10px;
-        font-size: 16px;
-        border-radius: 8px;
-        border: none;
-    }
-    button {
-        cursor: pointer;
-        background: #38bdf8;
-        margin-top: 10px;
-    }
-    .barra {
-        margin-top: 20px;
-        width: 100%;
-        height: 18px;
-        background: #1e293b;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .progreso {
-        height: 100%;
-        background: linear-gradient(90deg, #22c55e, #eab308, #ef4444);
-        width: 0%;
-        transition: width 0.5s;
-    }
-    .numeros {
-        margin-top: 20px;
-        font-size: 18px;
-        line-height: 1.5;
-    }
+body {
+    font-family: system-ui, Arial, sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+}
+.card {
+    background: #020617;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+}
+input, button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+}
+button {
+    cursor: pointer;
+    background: #38bdf8;
+    margin-top: 10px;
+}
+.barra-container {
+    margin-top: 20px;
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 24px;
+}
+.barra {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #38bdf8, #22c55e, #facc15);
+    transition: width 1s;
+}
+.numeros {
+    margin-top: 20px;
+    font-size: 18px;
+}
 </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>⏳ Reloj de jubilación</h2>
+    <h2>🌈 Camino a la jubilación</h2>
 
     <p>Fecha de nacimiento:</p>
     <input type="date" id="nacimiento">
 
     <p>Edad de jubilación:</p>
-    <input type="number" id="edadJubi" value="65" min="40" max="90">
+    <input type="number" id="edadJubi" value="65">
 
     <br>
-    <button onclick="iniciar()">Iniciar cuenta regresiva</button>
+    <button onclick="iniciar()">Iniciar</button>
 
-    <div class="barra">
-        <div class="progreso" id="progreso"></div>
+    <div class="barra-container">
+        <div class="barra" id="barra"></div>
     </div>
 
     <div class="numeros" id="resultado"></div>
 </div>
 
 <script>
-let timer = null;
-
 function iniciar() {
-    if (timer) clearInterval(timer);
-
-    const nacimiento = new Date(document.getElementById("nacimiento").value);
+    const nacimientoStr = document.getElementById("nacimiento").value;
     const edadJubi = parseInt(document.getElementById("edadJubi").value);
 
-    if (!nacimiento.getTime() || edadJubi <= 0) {
-        alert("Ingresá datos válidos.");
+    if (!nacimientoStr) {
+        alert("Elegí tu fecha de nacimiento");
         return;
     }
 
+    const nacimiento = new Date(nacimientoStr);
     const fechaJubi = new Date(nacimiento);
     fechaJubi.setFullYear(nacimiento.getFullYear() + edadJubi);
 
@@ -96,17 +91,18 @@ function iniciar() {
         const ahora = new Date();
 
         if (ahora >= fechaJubi) {
-            document.getElementById("resultado").innerHTML = "🎉 ¡Ya te podés jubilar!";
-            document.getElementById("progreso").style.width = "100%";
+            document.getElementById("resultado").innerHTML = "🎉 ¡Ya llegaste a la jubilación!";
+            document.getElementById("barra").style.width = "100%";
             return;
         }
 
         const total = fechaJubi - nacimiento;
-        const transcurrido = ahora - nacimiento;
-        const restante = fechaJubi - ahora;
+        const trans = ahora - nacimiento;
+        const progreso = trans / total;
 
-        const porcentaje = Math.min(100, (transcurrido / total) * 100);
-        document.getElementById("progreso").style.width = porcentaje.toFixed(2) + "%";
+        document.getElementById("barra").style.width = (progreso * 100).toFixed(2) + "%";
+
+        const restante = fechaJubi - ahora;
 
         let segundos = Math.floor(restante / 1000);
         let minutos = Math.floor(segundos / 60);
@@ -120,23 +116,16 @@ function iniciar() {
         segundos %= 60;
 
         document.getElementById("resultado").innerHTML = `
-            Te faltan:<br><br>
-            🗓 <b>${años}</b> años<br>
-            📅 <b>${dias}</b> días<br>
-            ⏰ <b>${horas}</b> horas<br>
-            ⏱ <b>${minutos}</b> minutos<br>
-            ⚡ <b>${segundos}</b> segundos<br><br>
-            ⏳ Progreso vital: <b>${porcentaje.toFixed(2)}%</b>
+            Te faltan:<br>
+            ${años} años, ${dias} días, ${horas} horas, ${minutos} minutos, ${segundos} segundos
         `;
     }
 
     actualizar();
-    timer = setInterval(actualizar, 1000);
+    setInterval(actualizar, 1000);
 }
 </script>
 
 </body>
 </html>
-
-
 
